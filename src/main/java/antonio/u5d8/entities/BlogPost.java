@@ -5,21 +5,23 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+
 @Entity
-@Table(name = "blog_posts")
 public class BlogPost {
     @Id
     @GeneratedValue
-    private UUID blog_id;
+    private UUID id;
+
     private String titolo;
     private String contenuto;
     private String categoria;
     private LocalDate tempoLettura;
     private String cover;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "autore_id", nullable = false)
     private Autore autore;
+    private UUID blog_id;
 
     public BlogPost() {
     }

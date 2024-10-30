@@ -17,5 +17,7 @@ public class BlogPostPayload {
     private String contenuto;
     private String categoria;
     private LocalDate tempoLettura;
+
+
     private UUID autoreId;
 }

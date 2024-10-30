@@ -19,7 +19,7 @@ public class AutoreController {
     private AutoreService autoreService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK) // 200 OK
+    @ResponseStatus(HttpStatus.OK)
     public List<Autore> getAllAutori() {
         return autoreService.getAllAutori();
     }

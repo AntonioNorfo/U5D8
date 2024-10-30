@@ -33,17 +33,19 @@ public class BlogPostService {
 
     @Transactional
     public BlogPost addBlogPost(BlogPostPayload payload) {
-        Autore autore = autoreService.getAutoreById(payload.getAutoreId())
-                .orElseThrow(() -> new ResourceNotFoundException("Autore non trovato"));
 
-        BlogPost blogPost = new BlogPost(
-                payload.getTitolo(),
-                payload.getContenuto(),
-                payload.getCategoria(),
-                payload.getTempoLettura(),
-                autore
-        );
+        Autore autore = autoreService.getAutoreById(payload.getAutoreId())
+                .orElseThrow(() -> new ResourceNotFoundException("Autore non trovato con ID: " + payload.getAutoreId()));
+
+
+        BlogPost blogPost = new BlogPost();
+        blogPost.setTitolo(payload.getTitolo());
+        blogPost.setContenuto(payload.getContenuto());
+        blogPost.setCategoria(payload.getCategoria());
+        blogPost.setTempoLettura(payload.getTempoLettura());
         blogPost.setCover("https://picsum.photos/200/300");
+        blogPost.setAutore(autore);
+
         return blogPostRepository.save(blogPost);
     }
 
