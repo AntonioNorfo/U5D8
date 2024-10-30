@@ -4,29 +4,31 @@ import antonio.u5d8.entities.Autore;
 import antonio.u5d8.entities.BlogPost;
 import antonio.u5d8.exception.ResourceNotFoundException;
 import antonio.u5d8.payloads.BlogPostPayload;
+import antonio.u5d8.repositories.BlogPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class BlogPostService {
-    private List<BlogPost> blogPosts = new ArrayList<>();
+
+    @Autowired
+    private BlogPostRepository blogPostRepository;
 
     @Autowired
     private AutoreService autoreService;
 
+    // Metodo di istanza che usa findAll
     public Page<BlogPost> getAllBlogPosts(Pageable pageable) {
         return blogPostRepository.findAll(pageable);
     }
 
     public Optional<BlogPost> getBlogPostById(UUID id) {
-        return blogPosts.stream().filter(bp -> bp.getBlog_id().equals(id)).findFirst();
+        return blogPostRepository.findById(id);
     }
 
     public BlogPost addBlogPost(BlogPostPayload payload) {
@@ -40,10 +42,8 @@ public class BlogPostService {
                 payload.getTempoLettura(),
                 autore
         );
-        blogPost.setBlog_id(UUID.randomUUID());
         blogPost.setCover("https://picsum.photos/200/300");
-        blogPosts.add(blogPost);
-        return blogPost;
+        return blogPostRepository.save(blogPost);
     }
 
     public BlogPost updateBlogPost(UUID id, BlogPost updatedBlogPost) {
@@ -55,10 +55,13 @@ public class BlogPostService {
         blogPost.setCategoria(updatedBlogPost.getCategoria());
         blogPost.setTempoLettura(updatedBlogPost.getTempoLettura());
         blogPost.setAutore(updatedBlogPost.getAutore());
-        return blogPost;
+        return blogPostRepository.save(blogPost);
     }
 
     public void deleteBlogPost(UUID id) {
-        blogPosts.removeIf(bp -> bp.getBlog_id().equals(id));
+        if (!blogPostRepository.existsById(id)) {
+            throw new ResourceNotFoundException("BlogPost non trovato");
+        }
+        blogPostRepository.deleteById(id);
     }
 }
