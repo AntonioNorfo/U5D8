@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +23,6 @@ public class BlogPostService {
     @Autowired
     private AutoreService autoreService;
 
-    // Metodo di istanza che usa findAll
     public Page<BlogPost> getAllBlogPosts(Pageable pageable) {
         return blogPostRepository.findAll(pageable);
     }
@@ -31,6 +31,7 @@ public class BlogPostService {
         return blogPostRepository.findById(id);
     }
 
+    @Transactional
     public BlogPost addBlogPost(BlogPostPayload payload) {
         Autore autore = autoreService.getAutoreById(payload.getAutoreId())
                 .orElseThrow(() -> new ResourceNotFoundException("Autore non trovato"));
@@ -46,8 +47,9 @@ public class BlogPostService {
         return blogPostRepository.save(blogPost);
     }
 
+    @Transactional
     public BlogPost updateBlogPost(UUID id, BlogPost updatedBlogPost) {
-        BlogPost blogPost = getBlogPostById(id)
+        BlogPost blogPost = blogPostRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("BlogPost non trovato"));
 
         blogPost.setTitolo(updatedBlogPost.getTitolo());
@@ -58,6 +60,7 @@ public class BlogPostService {
         return blogPostRepository.save(blogPost);
     }
 
+    @Transactional
     public void deleteBlogPost(UUID id) {
         if (!blogPostRepository.existsById(id)) {
             throw new ResourceNotFoundException("BlogPost non trovato");
